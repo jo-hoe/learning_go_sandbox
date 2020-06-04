@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 // Create a new type of 'deck' which is a slice of strings
@@ -47,9 +48,13 @@ func deal(d deck, handSize int) (deck, deck) {
 }
 
 func (d deck) shuffle() {
-	for i := range d {
-		newPosition := rand.Intn(len(d) - 1)
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
 
+	for i := range d {
+		newPosition := r.Intn(len(d) - 1)
+
+		// switch two items in one line
 		d[i], d[newPosition] = d[newPosition], d[i]
 	}
 }
