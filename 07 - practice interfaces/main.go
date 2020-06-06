@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 type shape interface {
 	getArea() float64
@@ -16,11 +19,6 @@ type triangle struct {
 }
 
 func main() {
-	s := square{sideLength: 2}
-	printArea(s)
-
-	t := triangle{hight: 2, base: 3}
-	printArea(t)
 }
 
 func (s square) getArea() float64 {
@@ -31,6 +29,7 @@ func (t triangle) getArea() float64 {
 	return (t.hight * t.base) / 2
 }
 
-func printArea(s shape) {
-	fmt.Println("The area is:", s.getArea())
+func printArea(s shape, wr io.Writer) {
+	message := fmt.Sprintf("The area is: %f", s.getArea())
+	wr.Write([]byte(message))
 }
