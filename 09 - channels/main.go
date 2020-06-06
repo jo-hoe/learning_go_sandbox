@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 var urls = []string{
@@ -20,7 +21,14 @@ func main() {
 		go avaiablityCheck(url, c)
 	}
 
-	fmt.Println(<-c)
+	for url := range c {
+		// this is called a "function literal"
+		// which is simliar to an anonymous function aka lambda
+		go func(url string) {
+			time.Sleep(time.Second * 2)
+			go avaiablityCheck(url, c)
+		}(url)
+	}
 }
 
 // Note that this avaiability check considers a url to be up even if an
@@ -28,10 +36,11 @@ func main() {
 // (e.g. DNS name cannot be resolved) the website is considered down.
 func avaiablityCheck(url string, c chan string) {
 	_, err := http.Get(url)
-	if err != nil {
-		c <- url + "- cannot be reached"
-		return
-	}
 
-	c <- url + "- is up"
+	if err == nil {
+		fmt.Println(url, "- is up")
+	} else {
+		fmt.Println(url, "- cannot be reached")
+	}
+	c <- url
 }
